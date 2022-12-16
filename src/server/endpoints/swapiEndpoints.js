@@ -8,7 +8,7 @@ const applySwapiEndpoints = (server, app) => {
     });
 
     server.get('/hfswapi/getPeople/:id', async (req, res) => {        
-        
+        //const p = await app.db.swPeople.findAll();
         const stwpersonW = await app.swapiFunctions.genericRequest(`https://swapi.dev/api/people/${req.params.id}`, 'GET', null, true);
         const stwplanet = await app.swapiFunctions.genericRequest(`${stwpersonW.homeworld}`, 'GET', null, true);
         let str = stwpersonW.homeworld.split("/");
