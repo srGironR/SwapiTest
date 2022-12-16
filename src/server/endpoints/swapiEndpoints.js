@@ -39,7 +39,27 @@ const applySwapiEndpoints = (server, app) => {
     });
 
     server.get('/hfswapi/getWeightOnPlanetRandom', async (req, res) => {
-        res.sendStatus(501);
+        let randomPe = Math.floor(Math.random()*82)+1;
+        let randomPa = Math.floor(Math.random()*60)+1;
+        console.log(randomPe+" "+randomPa)
+
+        try {
+            const stwperson = await app.swapiFunctions.genericRequest(`https://swapi.dev/api/people/${randomPe}`, 'GET', null, true);
+            const stwplanet = await app.swapiFunctions.genericRequest(`https://swapi.dev/api/planets/${randomPa}`, 'GET', null, true);
+
+            const weight = await app.swapiFunctions.getWeightOnPlanet(stwperson.mass,stwplanet.gravity);
+            let str = stwperson.homeworld.split("/");
+
+            if(str[5] == randomPa.toString()){
+                return res.status(403).send({msg:"No se puede calcular el peso de un personaje en su planeta natal"})
+            }
+            
+            res.status(200).send({msg:"El personaje "+stwperson.name+" pesa "+weight+" en el planeta "+stwplanet.name});
+                
+        } catch (error) {
+            res.status(400).send({ msj: "error", error });
+        }
+        
     });
 
     server.get('/hfswapi/getLogs',async (req, res) => {
